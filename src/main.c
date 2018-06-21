@@ -26,16 +26,20 @@ float actual[SIZE][SIZE];
 
 
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
+  // this could be optimized and storing whole row to separate local variable
+  // and then only then multiplying the cosf(PI_SIZE * (j+0.5f) * y) with the
+  // result, but this way it loads the a cpu bit more.
+
   for (int y = 0; y < SIZE; y++) {
     for (int x = 0; x < SIZE; x++) {
       float frequency = 0.0f;
       for (int j = 0; j < SIZE; j++) {
         for (int i = 0; i < SIZE; i++) {
-          frequency += input[j][i] * cosf(PI_SIZE * (i+0.5f) * x) *
-                                     cosf(PI_SIZE * (j+0.5f) * y);
+          frequency += input[j][i] * cosf(PI_SIZE * (i + 0.5f) * x) *
+                                     cosf(PI_SIZE * (j + 0.5f) * y);
         }
       }
-      output[y][x] = 2.0f/SIZE * C(y) * C(x) * frequency;
+      output[y][x] = (2.0f / SIZE) * C(y) * C(x) * frequency;
     }
   }
 }
@@ -47,11 +51,11 @@ void idct(float (*input)[SIZE], float (*output)[SIZE]) {
       float pixel = 0.0f;
       for (int y = 0; y < SIZE; y++) {
         for (int x = 0; x < SIZE; x++) {
-           pixel += C(x) * C(y) * input[y][x] * cosf(PI_SIZE * (i+0.5f) * x) *
-                                                cosf(PI_SIZE * (j+0.5f) * y);
+           pixel += C(y) * C(x) * input[y][x] * cosf(PI_SIZE * (i + 0.5f) * x) *
+                                                cosf(PI_SIZE * (j + 0.5f) * y);
         }
       }
-      output[j][i] = pixel * 2.0f/SIZE;
+      output[j][i] = (2.0f / SIZE) * pixel;
     }
   }
 }
