@@ -6,25 +6,14 @@
 #include <float.h>
 #include <math.h>
 
-#define SIZE 8
+#include "data.h"
+
 #define PI_SIZE 3.14159f / SIZE
 #define C(x) ( (x==0)? 1.0f / sqrtf(2.0f) : 1.0f )
-
-float input[SIZE][SIZE] = {
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.9f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f},
-    { 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}
-  };
-
-float frequencySpectrum[SIZE][SIZE];
-float actual[SIZE][SIZE];
+//#define VERBOSE 1
 
 
+// Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
   // this could be optimized and storing whole row to separate local variable
   // and then only then multiplying the cosf(PI_SIZE * (j+0.5f) * y) with the
@@ -33,6 +22,7 @@ void dct(float (*input)[SIZE], float (*output)[SIZE]) {
   for (int y = 0; y < SIZE; y++) {
     for (int x = 0; x < SIZE; x++) {
       float frequency = 0.0f;
+
       for (int j = 0; j < SIZE; j++) {
         for (int i = 0; i < SIZE; i++) {
           frequency += input[j][i] * cosf(PI_SIZE * (i + 0.5f) * x) *
@@ -40,15 +30,18 @@ void dct(float (*input)[SIZE], float (*output)[SIZE]) {
         }
       }
       output[y][x] = (2.0f / SIZE) * C(y) * C(x) * frequency;
+
     }
   }
 }
 
 
+// Inverse discrete cosine transform
 void idct(float (*input)[SIZE], float (*output)[SIZE]) {
   for (int j = 0; j < SIZE; j++) {
     for (int i = 0; i < SIZE; i++) {
       float pixel = 0.0f;
+
       for (int y = 0; y < SIZE; y++) {
         for (int x = 0; x < SIZE; x++) {
            pixel += C(y) * C(x) * input[y][x] * cosf(PI_SIZE * (i + 0.5f) * x) *
@@ -56,6 +49,7 @@ void idct(float (*input)[SIZE], float (*output)[SIZE]) {
         }
       }
       output[j][i] = (2.0f / SIZE) * pixel;
+
     }
   }
 }
@@ -83,15 +77,38 @@ float diffActualExpected(float (*expected)[SIZE], float (*actual)[SIZE]) {
 }
 
 
-int main() {
-  dct(input, frequencySpectrum);
-  idct(frequencySpectrum, actual);
+float test(float (*input)[SIZE]) {
+  float frequencySpectrum[SIZE][SIZE];
+  float actual[SIZE][SIZE];
 
+  dct(input, frequencySpectrum);   // convert input data to spectrum
+  idct(frequencySpectrum, actual); // then convert spectrum back to data
+
+#ifdef VERBOSE
   displayMatrix(input);
   displayMatrix(frequencySpectrum);
   displayMatrix(actual);
 
-  printf("error %f\n", diffActualExpected(input, actual));
+  printf("difference %f\n", diffActualExpected(input, actual));
+#endif
+
+  // compare how much calculated and original differ
+  return diffActualExpected(input, actual);
+}
+
+
+int main() {
+
+  while (1) {
+    float total = 0.0f;
+
+    total += test(data_wave);
+    total += test(data_A);
+    total += test(data_checker);
+    total += test(data_empty);
+
+    printf("%f \n", total);
+  }
 
   return 0;
 }
