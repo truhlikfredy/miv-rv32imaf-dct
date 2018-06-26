@@ -1,0 +1,12 @@
+sudo: required
+
+language: c
+
+services:
+  - docker
+
+before_install:
+- docker pull antonkrug/softconsole-5-3
+
+script:
+- docker run antonkrug/softconsole-5-3 -v /:/docker_host bash -c "eclipse -nosplash -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data /opt/microsemi/softconsole/extras/workspace.examples/ -import /docker_host/ -cleanBuild miv-rv32imaf-dct/Debug"
