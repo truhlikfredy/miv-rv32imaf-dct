@@ -9,4 +9,4 @@ before_install:
 - docker pull antonkrug/softconsole-5-3-slim
 
 script:
-- docker run -v ${TRAVIS_BUILD_DIR}:/docker_host antonkrug/softconsole-5-3 bash -c "eclipse -nosplash -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data /opt/microsemi/softconsole/extras/workspace.examples/ -import /docker_host/ -cleanBuild miv-rv32imaf-dct/Debug"
+- docker run -v ${TRAVIS_BUILD_DIR}:/docker_host antonkrug/softconsole-5-3-slim bash -c "eclipse -nosplash -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data /opt/microsemi/softconsole/extras/workspace.examples/ -import /docker_host/ -cleanBuild miv-rv32imaf-dct/Debug"
