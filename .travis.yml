@@ -1,9 +1,4 @@
-sudo: required
-
 language: c
-
-services:
-  - docker
 
 script:
 - docker run -v ${TRAVIS_BUILD_DIR}:/project antonkrug/softconsole-5-3-slim bash -c "softconsole-headless -i=/project/ -b=.+/.+"
