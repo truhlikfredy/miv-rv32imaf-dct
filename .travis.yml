@@ -1,1 +1,1 @@
-script: docker run -v ${TRAVIS_BUILD_DIR}:/project antonkrug/softconsole-5-3-slim:5400e4 sch
+script: docker run -v ${TRAVIS_BUILD_DIR}:/project antonkrug/softconsole-5-3-slim:5400e4d sch
