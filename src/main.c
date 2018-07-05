@@ -12,6 +12,9 @@
 #define C(x) ( (x==0)? 1.0f / sqrtf(2.0f) : 1.0f )
 //#define VERBOSE 1
 
+#ifndef ITERATIONS
+#define ITERATIONS 200
+#endif
 
 // Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
@@ -77,12 +80,24 @@ float diffActualExpected(float (*expected)[SIZE], float (*actual)[SIZE]) {
 }
 
 
-float test(float (*input)[SIZE]) {
+unsigned int checksumMatrix(float (*input)[SIZE]) {
+  unsigned int sum = 0;
+  for (int y = 0; y < SIZE; y++) {
+    for (int x = 0; x < SIZE; x++) {
+      sum += *(unsigned int*)&input[y][x];
+    }
+  }
+  return sum;
+}
+
+
+float test(float (*input)[SIZE], unsigned int* totalChecksum) {
   float frequencySpectrum[SIZE][SIZE];
   float actual[SIZE][SIZE];
 
   dct(input, frequencySpectrum);   // convert input data to spectrum
   idct(frequencySpectrum, actual); // then convert spectrum back to data
+  *totalChecksum = *totalChecksum + checksumMatrix(actual);
 
 #ifdef VERBOSE
   displayMatrix(input);
@@ -97,17 +112,43 @@ float test(float (*input)[SIZE]) {
 }
 
 
+void display_total_sum(unsigned int sum, unsigned int iterations) {
+	// If you are doing automated gdb testing, this is the place where
+	// you want to set your breakpoint to.
+	// for 200 iteration ->  checksum = d2be7e68
+	// for 400 iteration ->  checksum = a57cfcd0
+	// for 600 iteration ->  checksum = 783b7b38
+
+    printf("total_checksum=0x%08x iterations=%d \n", sum, iterations);
+    exit(0);
+}
+
+
 int main() {
+  unsigned int total_sum = 0;
+  unsigned int iteration = 1;
 
   while (1) {
-    float total = 0.0f;
+    float        total     = 0.0f;
+    unsigned int sum = 0;
 
-    total += test(data_wave);
-    total += test(data_A);
-    total += test(data_checker);
-    total += test(data_empty);
+    total += test(data_wave,            &sum);
+    total += test(data_A,               &sum);
+    total += test(data_checker,         &sum);
+    total += test(data_checker_inverse, &sum);
+    total += test(data_empty,           &sum);
+    total += test(data_full,            &sum);
+    total += test(data_stripe,          &sum);
+    total += test(data_stripe_inverse,  &sum);
+    total += test(data_random,          &sum);
 
-    printf("%f \n", total);
+    total_sum += sum;
+
+    if ( (iteration % ITERATIONS) == 0) {
+    	display_total_sum(total_sum, iteration);
+    }
+    printf("checksum=0x%08x diff=%f \n", sum, total);
+    iteration++;
   }
 
   return 0;
