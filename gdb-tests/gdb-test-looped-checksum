@@ -1,0 +1,16 @@
+target remote localhost:3333
+load miv-rv32imaf-dct.elf
+break display_total_sum
+continue
+
+
+# arrived at breakpoint 
+printf "Expected= 0xd2be7e68, Actual:"
+p/x sum
+if (sum == 0xd2be7e68)
+  print "passed the test"
+  quit 0
+else
+  print "failed the test!"
+  quit 1
+end

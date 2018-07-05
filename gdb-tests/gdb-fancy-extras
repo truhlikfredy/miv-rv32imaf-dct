@@ -1,0 +1,437 @@
+# Inspired by https://www.ibm.com/developerworks/aix/library/au-gdb.html
+# but tweaked for remote hardware (multiple levels of verbosity as the highest are pretty slow)
+# and modified it for riscv registers (no floating point support at this moment and only 32bit)
+
+# ------------- basic helpers -----------------------
+
+
+define cls
+  shell clear
+end
+document cls
+Clears the screen with a simple command.
+end
+
+
+define connect
+  target remote localhost:3333
+end
+document connect
+Calls the "target remote localhost:3333". Less typing...
+end
+
+
+# ------------- break-point aliases -----------------------
+
+
+define bpl
+  info breakpoints
+end
+document bpl
+List breakpoints
+end
+ 
+
+define bp
+  set $SHOW_CONTEXT = 1
+  break * $arg0
+end
+document bp
+Set a breakpoint on address
+Usage: bp addr
+end
+ 
+
+define bpc
+  clear $arg0
+end
+document bpc
+Clear breakpoint at function/address
+Usage: bpc addr
+end
+ 
+
+define bpe
+enable $arg0
+end
+document bpe
+Enable breakpoint #
+Usage: bpe num
+end
+ 
+
+define bpd
+  disable $arg0
+end
+document bpd
+Disable breakpoint #
+Usage: bpd num
+end
+ 
+
+define bpt
+  set $SHOW_CONTEXT = 1
+  tbreak $arg0
+end
+document bpt
+Set a temporary breakpoint on address
+Usage: bpt addr
+end
+ 
+
+define bpm
+  set $SHOW_CONTEXT = 1
+  awatch $arg0
+end
+document bpm
+Set a read/write breakpoint on address
+Usage: bpm addr
+end
+
+
+# ------------- process info -----------------------
+
+
+define stack
+  info stack
+end
+document stack
+Print call stack
+end
+ 
+
+define frame_more
+  info frame
+  info args
+  info locals
+end
+document frame_more
+Print stack frame
+end
+
+
+define func
+  info functions
+end
+document func
+Print functions in target
+end
+ 
+
+define var
+  info variables
+end
+document var
+Print variables (symbols) in target
+end
+
+
+# override default function
+define thread   
+  info threads
+end
+document thread
+Print threads in target
+end
+ 
+
+define dis
+disassemble $arg0
+end
+document dis
+Disassemble address
+Usage: dis addr
+end
+
+# ------------------------- memory handling -------------------
+
+
+define mem_fill
+  monitor mww $arg0 $arg1 $arg2
+end
+document mem_fill
+Write to $arg0 memory value $arg1 and repeat it $arg2 times
+end
+
+
+define mem_write
+  monitor mww $arg0 $arg1 1
+end
+document mem_fill
+Write to $arg0 memory value $arg1
+end
+
+
+# ------------------------- registers and trap csrs -------------------
+
+
+define reg
+  printf " RetAddr: %08X   StackP: %08X GlobalP: %08X ThreadP: %08X",   $ra, $sp, $gp,  $tp
+  printf "      PC: %08X\n",                                            $pc
+  
+  printf "      t0: %08X       t1: %08X      t2: %08X      t3: %08X",   $t0, $t1, $t2,  $t3
+  printf "      t4: %08X       t5: %08X      t6: %08X           \n",    $t4, $t5, $t6
+  
+  printf "   s0/fp: %08X       s1: %08X      s2: %08X      s3: %08X",   $s0, $s1, $s2,  $s3
+  printf "      s4: %08X       s5: %08X      s6: %08X      s7: %08X",   $s4, $s5, $s6,  $s7
+  printf "      s8: %08X       s9: %08X     s10: %08X     s11: %08X\n", $s8, $s9, $s10, $s11
+  
+  printf " a0/ret0: %08X  a1/ret1: %08X      a2: %08X      a3: %08X",   $a0, $a1, $a2,  $a3
+  printf "      a4: %08X       a5: %08X      a6: %08X      a7: %08X\n", $a4, $a5, $a6,  $a7
+  monitor reg mstatus
+  printf "SD WPRI[XLEN-2:23] TSR TW (TVM MXR SUM MPRV) (XS[1:0] FS[1:0]) (MPP[1:0] WPRI SPP) (MPIE WPRI SPIE UPIE) (MIE WPRI SIE UIE)\n"
+end
+document reg
+Print CPU registers
+end
+
+
+define trap
+  printf "For more details use: https://content.riscv.org/wp-content/uploads/2017/05/riscv-privileged-v1.10.pdf \n\n"
+  
+  printf "mcause values and meanings are:\n"
+  printf "0 Instruction address misaligned (mtval is the address)\n"
+  printf "1 Instruction access fault       (mtval is the address)\n"
+  printf "2 Illegal instruction            (mtval contains the offending instruction opcode)\n"
+  printf "3 Breakpoint\n"
+  printf "4 Load address misaligned        (mtval is the address)\n"
+  printf "5 Load address fault             (mtval is the address)\n"
+  printf "6 Store/AMO address fault        (mtval is the address)\n"
+  printf "7 Store/AMO access fault         (mtval is the address)\n"
+  printf "8 Environment call from U-mode\n"
+  printf "9 Environment call from S-mode\n"
+  printf "A Environment call from M-mode\n"
+  printf "B Instruction page fault\n"
+  printf "C Load page fault                (mtval is the address)\n"
+  printf "E Store page fault               (mtval is the address)\n"
+  monitor reg mcause
+  
+  printf "\nInterrupt pending:\n"
+  monitor reg mip
+  
+  printf "\nInterrupt enable:\n"
+  monitor reg mie
+  
+  printf "\nmtval contains address, opcode or have no meaning (meaning depends on mcause):\n"
+  monitor reg mtval
+  
+  printf "\ntrap vector (where to jump in case trap happens):\n"
+  monitor reg mtvec
+  
+  printf "\nPC where the exception happened:\n"
+  monitor reg mepc
+  
+  printf "\nTemporary, sometimes might hold value of a0:\n"
+  monitor reg mscratch
+  
+  printf "\nGlobal interupt enable and many other states:\n"
+  printf "SD WPRI[XLEN-2:23] TSR TW (TVM MXR SUM MPRV) (XS[1:0] FS[1:0]) (MPP[1:0] WPRI SPP) (MPIE WPRI SPIE UPIE) (MIE WPRI SIE UIE)\n"
+  monitor reg mstatus
+end
+document reg
+Print csrs related to trap
+end
+
+
+# ------------------------- hex and asci dumping -------------------
+
+define ascii_char
+  set $_c=*(unsigned char *)($arg0)
+  if ( $_c < 0x20 || $_c > 0x7E )
+    printf "."
+  else
+    printf "%c", $_c
+  end
+end
+document ascii_char
+Print the ASCII value of arg0 or '.' if value is unprintable
+end
+
+
+define hex_quad
+  printf "%02X %02X %02X %02X  %02X %02X %02X %02X",                 \
+         *(unsigned char*)($arg0), *(unsigned char*)($arg0 + 1),     \
+         *(unsigned char*)($arg0 + 2), *(unsigned char*)($arg0 + 3), \
+         *(unsigned char*)($arg0 + 4), *(unsigned char*)($arg0 + 5), \
+         *(unsigned char*)($arg0 + 6), *(unsigned char*)($arg0 + 7)
+end
+document hex_quad
+Print eight hexadecimal bytes starting at arg0
+end
+
+
+define hexdump
+  printf "%08X : ", $arg0
+  hex_quad $arg0
+  printf " - "
+  hex_quad ($arg0+8)
+  printf " "
+   
+  ascii_char ($arg0)
+  ascii_char ($arg0+1)
+  ascii_char ($arg0+2)
+  ascii_char ($arg0+3)
+  ascii_char ($arg0+4)
+  ascii_char ($arg0+5)
+  ascii_char ($arg0+6)
+  ascii_char ($arg0+7)
+  ascii_char ($arg0+8)
+  ascii_char ($arg0+9)
+  ascii_char ($arg0+0xA)
+  ascii_char ($arg0+0xB)
+  ascii_char ($arg0+0xC)
+  ascii_char ($arg0+0xD)
+  ascii_char ($arg0+0xE)
+  ascii_char ($arg0+0xF)
+   
+  printf "\n"
+end
+document hexdump
+Display a 16-byte hex/ASCII dump of arg0
+end
+
+
+define hexdump_fast
+  x/16x $arg0
+end
+document hexdump_fast
+Display only 3 lines of hex values from $arg0
+end
+
+
+define dump_header
+  printf "-----------------------------------------------------------------------"
+  if ( $arg0 == 0)
+    printf "[custom]\n"
+  end
+  if ( $arg0 == 1)
+    printf "[retAdr]\n"
+  end
+  if ( $arg0 == 2)
+    printf "[ stack]\n"
+  end
+  if ( $arg0 == 3)
+    printf "[global]\n"
+  end
+  if ( $arg0 == 4)
+    printf "[thread]\n"
+  end
+  if ( $arg0 == 5)
+    printf "[  code]\n"
+  end
+  if ( $arg0 == 6)
+    printf "[  data]\n"
+  end
+end
+document dump_header
+Will print separation header depending on $arg0
+end
+
+ 
+define dump_pretty
+  # arg0 selects what header it will have, string literals will get confused with the target, so numbers are safer
+  # arg1 will point to the base address
+  # arg2 how many lines of the dupmp will be printed
+
+  dump_header $arg0
+
+  set $_count=0
+  while ( $_count < $arg2 )
+    set $_i=($_count*0x10)
+    hexdump ($arg1+$_i)
+    set $_count++
+  end
+end
+document dump_pretty
+Display $arg2 lines of hexdump for address $arg1 with a header type of $arg0
+end
+
+
+define dump_fast
+  # arg0 selects what header it will have, string literals will get confused with the target, so numbers are safer
+  # arg1 will point to the base address
+
+  dump_header $arg0
+  hexdump_fast $arg1
+end
+document dump_fast
+Display 3 lines of hexdump for address $arg1 with a header type of $arg0
+end
+
+
+define mc
+  #cls
+  reg
+  dump_pretty 1 $ra 3
+  disassemble /s $ra,+24
+  dump_pretty 2 $sp 3
+  dump_pretty 3 $gp 3
+  dump_pretty 4 $tp 3
+  dump_pretty 5 $pc 3
+  #x /8i $pc  
+  disassemble /s $pc,+24
+  backtrace
+end
+document mc
+Missions control display content of the return-address, stack, global, thread and program pointers.
+end
+
+# ------------------------- showing context for each step -------------------
+
+define context
+  if ( $SHOW_CONTEXT == 2 )
+    clear
+    reg
+    dump_fast 1 $ra
+    dump_fast 2 $sp 3
+    dump_fast 3 $gp 3
+    dump_fast 4 $tp 3
+    dump_fast 5 $pc 3
+    #x /6i $pc
+    disassemble /s $pc,+24
+    list
+    printf "_______________________________________________________________________________\n"
+  end
+  if ( $SHOW_CONTEXT == 1 )
+    printf "-------------------------------------------------------------------------------\n"
+    #x /5i $pc
+    disassemble /s $pc,+24
+    printf "_______________________________________________________________________________\n"
+  end
+end
+document context
+Print regs and disassemble few lines
+end
+ 
+
+define context-full
+  set $SHOW_CONTEXT = 2
+end
+document context-full
+Enable display of verbose context on every program stop
+end
+
+
+define context-on
+  set $SHOW_CONTEXT = 1
+end
+document context-on
+Enable display of context on every program stop
+end
+
+ 
+define context-off
+  set $SHOW_CONTEXT = 1
+end
+document context-on
+Disable display of context on every program stop
+end
+ 
+
+# Calls "context" at every breakpoint.
+define hook-stop
+  context
+end
+
+# by default showing context is disabled
+set $SHOW_CONTEXT = 0
