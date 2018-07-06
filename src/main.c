@@ -120,7 +120,6 @@ void display_total_sum(unsigned int sum, unsigned int iterations) {
 	// for 600 iteration ->  checksum = 783b7b38
 
     printf("total_checksum=0x%08x iterations=%d \n", sum, iterations);
-    exit(0);
 }
 
 
