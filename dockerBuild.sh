@@ -5,9 +5,7 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 HOST_UID=`id -u`
 HOST_GID=`id -g`
 
-echo "Clean the $PROJECT_DIR Debug/Release folders"
-rm -r $PROJECT_DIR/Debug >/dev/null 2>&1
-rm -r $PROJECT_DIR/Release >/dev/null 2>&1
+$PROJECT_DIR/clean.sh
 
 echo "Building the $PROJECT_DIR project"
 
