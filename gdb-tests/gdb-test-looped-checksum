@@ -1,16 +1,58 @@
+
+define test_failed
+  # if it is not catched by any pass conditions, then it must be fail
+  printf " FAILED the test\n"
+
+  # exiting with a specific exit code newer kernels can have 32bit exit code so it
+  # will not be mistaken by any other exit codes which could happen on communication
+  # or other errors
+  quit 0xec115f3e
+end
+
+
+define test_expected
+  printf "expected=%08X actual=%08X", $arg0, sum
+
+  if (sum == $arg0)
+    print " PASSED the test\n"
+    # exiting with a specific exit code newer kernels can have 32bit exit code so it
+    # will not be mistaken by any other exit codes which could happen on communication
+    # or other errors
+
+    quit 0xc1054a86   
+  else
+    test_failed
+  end
+end
+
+
 target remote localhost:3333
 load miv-rv32imaf-dct.elf
-break display_total_sum
+break 128
 continue
 
-
 # arrived at breakpoint 
-printf "Expected= 0xd2be7e68, Actual:"
-p/x sum
-if (sum == 0xd2be7e68)
-  print "passed the test"
-  quit 0
-else
-  print "failed the test!"
-  quit 1
+
+# Check for all valid checkshums depending on the iterations proccessed
+
+printf "Test was iterated=%d times ", current_iteration
+
+if (current_iteration == 600)
+  test_passed 0x783b7b38
 end
+
+if (current_iteration == 400)
+  test_passed 0xa57cfcd0
+end
+
+if (current_iteration == 200)
+  test_passed 0xd2be7e68
+end
+
+if (current_iteration == 100)
+  test_expected 0x3440f3d5
+end
+
+
+printf " test failing because you use UNSUPORTED iterations. "
+test_failed
