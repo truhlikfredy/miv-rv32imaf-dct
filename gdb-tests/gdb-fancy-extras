@@ -164,6 +164,148 @@ end
 
 # ------------------------- registers and trap csrs -------------------
 
+define csr_analyze_mcause
+  printf "[mcause] "
+  if ($mcause & 0x80000000)
+    printf "Interrupt, "
+  end
+
+  if (($mcause & 0x7FFFFFFF) == 0)
+    printf "0 Instruction address misaligned (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 1)
+    printf "1 Instruction access fault (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 2)
+    printf "2 Illegal instruction (mtval contains the offending instruction opcode)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 3)
+    printf "3 Breakpoint"
+  end
+  if (($mcause & 0x7FFFFFFF) == 4)
+    printf "4 Load address misaligned (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 5)
+    printf "5 Load address fault (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 6)
+    printf "6 Store/AMO address fault (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 7)
+    printf "7 Store/AMO access fault (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 8)
+    printf "8 Environment call from U-mode"
+  end
+  if (($mcause & 0x7FFFFFFF) == 9)
+    printf "9 Environment call from S-mode"
+  end
+  if (($mcause & 0x7FFFFFFF) == 0xA)
+    printf "A Environment call from M-mode"
+  end
+  if (($mcause & 0x7FFFFFFF) == 0xB)
+    printf "B Instruction page fault"
+  end
+  if (($mcause & 0x7FFFFFFF) == 0xC)
+    printf "C Load page fault (mtval is the address)"
+  end
+  if (($mcause & 0x7FFFFFFF) == 0xD)
+    printf "D Reserved"
+  end
+  if (($mcause & 0x7FFFFFFF) == 0xE)
+    printf "E Store page fault (mtval is the address)\n"
+  end
+  printf "\n"
+end
+document csr_analyze_mcause
+Print mcause register bits
+end
+
+define csr_analyze_mstatus
+  printf "[mstatus]=%08X Global interupt enable and many other states: ", $mstatus
+  if ($mstatus & 0x00000001)
+    printf "UIE "
+  end
+  if ($mstatus & 0x00000002)
+    printf "SIE "
+  end
+  if ($mstatus & 0x00000004)
+    printf "WPRI "
+  end
+  if ($mstatus & 0x00000008)
+    printf "MIE "
+  end
+
+  if ($mstatus & 0x00000010)
+    printf "UPIE "
+  end
+  if ($mstatus & 0x00000020)
+    printf "SPIE "
+  end
+  if ($mstatus & 0x00000040)
+    printf "WPRI "
+  end
+  if ($mstatus & 0x00000080)
+    printf "MPIE "
+  end
+
+  if ($mstatus & 0x00000100)
+    printf "SPP "
+  end
+  if ($mstatus & 0x00000200)
+    printf "WPRI "
+  end
+  if ($mstatus & 0x00000400)
+    printf "MPP[0] "
+  end
+  if ($mstatus & 0x00000800)
+    printf "MPP[1] "
+  end
+
+  if ($mstatus & 0x00001000)
+    printf "FS[0] "
+  end
+  if ($mstatus & 0x00002000)
+    printf "FS[1] "
+  end
+  if ($mstatus & 0x00004000)
+    printf "XS[0] "
+  end
+  if ($mstatus & 0x00008000)
+    printf "XS[1] "
+  end
+  
+  if ($mstatus & 0x00010000)
+    printf "MPRV "
+  end
+  if ($mstatus & 0x00020000)
+    printf "SUM "
+  end
+  if ($mstatus & 0x00040000)
+    printf "MXR "
+  end
+  if ($mstatus & 0x00080000)
+    printf "TVM "
+  end
+
+  if ($mstatus & 0x00010000)
+    printf "TW "
+  end
+  if ($mstatus & 0x00020000)
+    printf "TSR "
+  end
+  if ($mstatus & 0x7F800000)
+    printf " WPRSI=%08X ", ($mstatus & 0x7F800000) >> 22
+  end
+  if ($mstatus & 0x80000000)
+    printf "SD "
+  end
+  printf "\n"
+end
+document csr_analyze_mstatus
+Print mstatus register bits
+end
+
 
 define reg
   printf " RetAddr: %08X   StackP: %08X GlobalP: %08X ThreadP: %08X",   $ra, $sp, $gp,  $tp
@@ -178,8 +320,8 @@ define reg
   
   printf " a0/ret0: %08X  a1/ret1: %08X      a2: %08X      a3: %08X",   $a0, $a1, $a2,  $a3
   printf "      a4: %08X       a5: %08X      a6: %08X      a7: %08X\n", $a4, $a5, $a6,  $a7
-  monitor reg mstatus
-  printf "SD WPRI[XLEN-2:23] TSR TW (TVM MXR SUM MPRV) (XS[1:0] FS[1:0]) (MPP[1:0] WPRI SPP) (MPIE WPRI SPIE UPIE) (MIE WPRI SIE UIE)\n"
+  csr_analyze_mstatus
+  #printf "SD WPRI[XLEN-2:23] TSR TW (TVM MXR SUM MPRV) (XS[1:0] FS[1:0]) (MPP[1:0] WPRI SPP) (MPIE WPRI SPIE UPIE) (MIE WPRI SIE UIE)\n"
 end
 document reg
 Print CPU registers
@@ -188,45 +330,33 @@ end
 
 define trap
   printf "For more details use: https://content.riscv.org/wp-content/uploads/2017/05/riscv-privileged-v1.10.pdf \n\n"
-  
-  printf "mcause values and meanings are:\n"
-  printf "0 Instruction address misaligned (mtval is the address)\n"
-  printf "1 Instruction access fault       (mtval is the address)\n"
-  printf "2 Illegal instruction            (mtval contains the offending instruction opcode)\n"
-  printf "3 Breakpoint\n"
-  printf "4 Load address misaligned        (mtval is the address)\n"
-  printf "5 Load address fault             (mtval is the address)\n"
-  printf "6 Store/AMO address fault        (mtval is the address)\n"
-  printf "7 Store/AMO access fault         (mtval is the address)\n"
-  printf "8 Environment call from U-mode\n"
-  printf "9 Environment call from S-mode\n"
-  printf "A Environment call from M-mode\n"
-  printf "B Instruction page fault\n"
-  printf "C Load page fault                (mtval is the address)\n"
-  printf "E Store page fault               (mtval is the address)\n"
-  monitor reg mcause
-  
+
+ 
   printf "\nInterrupt pending:\n"
   monitor reg mip
   
   printf "\nInterrupt enable:\n"
   monitor reg mie
   
-  printf "\nmtval contains address, opcode or have no meaning (meaning depends on mcause):\n"
-  monitor reg mtval
+  printf "\n[mtval] contains address, opcode or have no meaning (meaning depends on mcause):\n"
+  if ($mcause == 0x0 | $mcause & 0x1 | $mcause & 0x4 | $mcause & 0x5 | $mcause & 0x6 | $mcause & 0x7 | $mcause & 0xC | $mcause & 0xe)
+    disassemble /s $mtval,+24
+  else
+    x/i $mtval
+  end
   
-  printf "\ntrap vector (where to jump in case trap happens):\n"
-  monitor reg mtvec
+  printf "\n[mtvec]trap vector (where to jump in case trap happens):\n"
+  x/i $mtvec
+  disassemble /s $mtvec,+24
   
   printf "\nPC where the exception happened:\n"
-  monitor reg mepc
+  x/i $mepc
+  disassemble /s $mepc,+24
   
   printf "\nTemporary, sometimes might hold value of a0:\n"
   monitor reg mscratch
   
-  printf "\nGlobal interupt enable and many other states:\n"
-  printf "SD WPRI[XLEN-2:23] TSR TW (TVM MXR SUM MPRV) (XS[1:0] FS[1:0]) (MPP[1:0] WPRI SPP) (MPIE WPRI SPIE UPIE) (MIE WPRI SIE UIE)\n"
-  monitor reg mstatus
+  csr_analyze_mstatus
 end
 document reg
 Print csrs related to trap
