@@ -33,21 +33,22 @@ continue
 # arrived at breakpoint 
 
 # Check for all valid checkshums depending on the iterations proccessed
-if (iteration == 100)
-  test_expected 0xd2be7e68
+if (current_iteration == 600)
+  test_passed 0x783b7b38
 end
 
-if (iteration == 200)
-  test_passed 0x3440f3d5
-end
-
-if (iteration == 400)
+if (current_iteration == 400)
   test_passed 0xa57cfcd0
 end
 
-if (iteration == 600)
-  test_passed 0x783b7b38
+if (current_iteration == 200)
+  test_passed 0x3440f3d5
 end
+
+if (current_iteration == 100)
+  test_expected 0xd2be7e68
+end
+
 
 print " test failing because you use UNSUPORTED iterations. "
 test_failed

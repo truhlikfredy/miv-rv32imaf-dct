@@ -112,14 +112,11 @@ float test(float (*input)[SIZE], unsigned int* totalChecksum) {
 }
 
 
-void display_total_sum(unsigned int sum, unsigned int iterations) {
+void display_total_sum(unsigned int sum, unsigned int current_iteration) {
 	// If you are doing automated gdb testing, this is the place where
 	// you want to set your breakpoint to.
-	// for 200 iteration ->  checksum = d2be7e68
-	// for 400 iteration ->  checksum = a57cfcd0
-	// for 600 iteration ->  checksum = 783b7b38
 
-    printf("total_checksum=0x%08x iterations=%d \n", sum, iterations);
+    printf("total_checksum=0x%08x current_iteration=%d \n", sum, current_iteration);
 }
 
 
