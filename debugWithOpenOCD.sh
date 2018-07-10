@@ -11,7 +11,8 @@ $SC_DIR/openocd/bin/openocd -f board/microsemi-riscv.cfg -c "echo openocd-starte
 sleep 4 # give enough time for hardware to init
 echo "OpenOCD should be launched, start the gdb now:"
 
-cd $PROJECT_DIR/Debug
+echo "Go into first Debug folder I can find (make sure to run clean before this so there are not other folder present)"
+cd $PROJECT_DIR/Debug*
 $SC_DIR/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-gdb -x ../gdb-tests/gdb-test-looped-checksum miv-rv32imaf-dct.elf miv-rv32imaf-dct.elf
 RESULT=$? # Store the exit code
 
