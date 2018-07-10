@@ -54,7 +54,7 @@ if (current_iteration == 200)
 end
 
 if (current_iteration == 100)
-  test_expected 0x3440f3d5
+  test_expected 0x695f3f34
 end
 
 if (current_iteration == 50)
