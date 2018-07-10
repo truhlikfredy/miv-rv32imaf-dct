@@ -23,7 +23,13 @@ if [ $RESULT == 0xc1054a86 ];
 then
     echo "Exiting as PASS"
     exit 0
+fi
+
+if [ $RESULT == 0xec115f3e ];
+then
+    echo "Exiting as FAILER on test failed (the checksum didn't matched)"
+    exit -1
 else
-    echo "Exiting as FAILURE"
+    echo "Exiting as FAILURE on the process failed (openocd/build/gdb)"
     exit -1
 fi
