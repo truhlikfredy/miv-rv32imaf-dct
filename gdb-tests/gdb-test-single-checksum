@@ -10,7 +10,7 @@ end
 
 
 define test_expected
-  printf "expected=%08X=", $arg0
+  printf "expected=%08X actual=%08X", $arg0, sum
 
   if (sum == $arg0)
     print " PASSED the test\n"
