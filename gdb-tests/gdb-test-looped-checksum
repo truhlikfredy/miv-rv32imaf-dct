@@ -28,7 +28,7 @@ end
 
 target remote localhost:3333
 load miv-rv32imaf-dct.elf
-break 128
+break display_total_sum
 continue
 
 # arrived at breakpoint 
