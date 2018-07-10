@@ -2,6 +2,8 @@ target remote localhost:3333
 load miv-rv32imaf-dct.elf
 break 128
 continue
+
+# converting a float to IEEE 754 raw value
 if (*(unsigned int *)&total == 0x3a7753d0) 
   print "passed the test"
   quit 0

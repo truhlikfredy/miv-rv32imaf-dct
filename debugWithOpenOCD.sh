@@ -27,5 +27,3 @@ else
     echo "Exiting as FAILURE"
     exit -1
 fi
-
-
