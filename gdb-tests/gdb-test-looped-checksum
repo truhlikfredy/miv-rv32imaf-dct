@@ -37,20 +37,32 @@ continue
 
 printf "Test was iterated=%d times ", current_iteration
 
+if (current_iteration == 1200)
+  test_expected 0x2c94b40c
+end
+
 if (current_iteration == 600)
-  test_passed 0x783b7b38
+  test_expected 0x783b7b38
 end
 
 if (current_iteration == 400)
-  test_passed 0xa57cfcd0
+  test_expected 0xa57cfcd0
 end
 
 if (current_iteration == 200)
-  test_passed 0xd2be7e68
+  test_expected 0xd2be7e68
 end
 
 if (current_iteration == 100)
   test_expected 0x3440f3d5
+end
+
+if (current_iteration == 50)
+  test_expected 0x34af9f9a
+end
+
+if (current_iteration == 10)
+  test_expected 0x0a898652
 end
 
 
