@@ -143,7 +143,7 @@ int main() {
     if ( (iteration % ITERATIONS) == 0) {
     	display_total_sum(total_sum, iteration);
     }
-    printf("checksum=0x%08x diff=%f \n", sum, total);
+    printf("checksum=0x%08x diff=%f iteration=%d\n", sum, total, iteration);
     iteration++;
   }
 
