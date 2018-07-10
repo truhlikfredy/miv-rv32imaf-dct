@@ -1,25 +1,35 @@
 
+define print_separator
+  printf "\n********************************************************************************\n" 
+end
+
+
 define test_failed
   # if it is not catched by any pass conditions, then it must be fail
-  printf " FAILED the test\n"
+  print_separator
+  printf "FAILED the test\n"
+  print_separator
 
   # exiting with a specific exit code newer kernels can have 32bit exit code so it
   # will not be mistaken by any other exit codes which could happen on communication
   # or other errors
-  quit 0xec115f3e
+  quit 150
 end
 
 
 define test_expected
-  printf "expected=%08X actual=%08X", $arg0, sum
+  printf "expected=%08X actual=%08X\n", $arg0, sum
 
   if (sum == $arg0)
-    print " PASSED the test\n"
+    print_separator
+    print "PASSED the test\n"
+    print_separator
+
     # exiting with a specific exit code newer kernels can have 32bit exit code so it
     # will not be mistaken by any other exit codes which could happen on communication
     # or other errors
 
-    quit 0xc1054a86   
+    quit 149   
   else
     test_failed
   end
@@ -31,8 +41,7 @@ load miv-rv32imaf-dct.elf
 break display_total_sum
 continue
 
-# arrived at breakpoint 
-
+# Arrived at the display_total_sum breakpoint 
 # Check for all valid checkshums depending on the iterations proccessed
 
 printf "Test was iterated=%d times ", current_iteration
@@ -66,5 +75,8 @@ if (current_iteration == 10)
 end
 
 
-printf " test failing because you use UNSUPORTED iterations. "
+print_separator
+printf "test failing because you use UNSUPORTED iterations.\n"
+print_separator
+
 test_failed

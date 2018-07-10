@@ -19,15 +19,15 @@ $PROJECT_DIR/killOpenOCD.sh
 
 # Cascade the gdb pass exit code out as a pass and all others as fails
 echo "Got $RESULT"
-if [ $RESULT == 0xc1054a86 ];
+if [ $RESULT == 149 ];
 then
     echo "Exiting as PASS"
     exit 0
 fi
 
-if [ $RESULT == 0xec115f3e ];
+if [ $RESULT == 150 ];
 then
-    echo "Exiting as FAILER on test failed (the checksum didn't matched)"
+    echo "Exiting as FAILUER on test failed (the checksum didn't matched)"
     exit -1
 else
     echo "Exiting as FAILURE on the process failed (openocd/build/gdb)"
