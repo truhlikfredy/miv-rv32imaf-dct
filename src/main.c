@@ -7,14 +7,16 @@
 #include <math.h>
 
 #include "data.h"
+#include "test-utils.h"
 
 #define PI_SIZE 3.14159f / SIZE
 #define C(x) ( (x==0)? 1.0f / sqrtf(2.0f) : 1.0f )
 //#define VERBOSE 1
 
 #ifndef ITERATIONS
-#define ITERATIONS 200
+#define ITERATIONS 10
 #endif
+
 
 // Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
@@ -115,7 +117,7 @@ float test(float (*input)[SIZE], unsigned int* totalChecksum) {
 void display_total_sum(unsigned int sum, unsigned int current_iteration) {
 	// If you are doing automated gdb testing, this is the place where
 	// you want to set your breakpoint to.
-
+	unsigned int current_configuration = get_configuration_state();
     printf("total_checksum=0x%08x current_iteration=%d \n", sum, current_iteration);
 }
 
