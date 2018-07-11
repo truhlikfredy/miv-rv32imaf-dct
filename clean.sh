@@ -6,4 +6,5 @@ rm -r -f $PROJECT_DIR/Debug-hardfloat >/dev/null 2>&1
 rm -r -f $PROJECT_DIR/Debug-softfloat >/dev/null 2>&1
 rm -r -f $PROJECT_DIR/Release >/dev/null 2>&1
 
-#rm -r -f $PROJECT_DIR/Debug-* >/dev/null 2>&1
+# clean all build folder from older project configurations
+rm -r -f $PROJECT_DIR/Debug* >/dev/null 2>&1
