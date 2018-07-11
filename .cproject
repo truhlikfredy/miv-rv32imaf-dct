@@ -91,7 +91,7 @@
                             							
                             <option id="ilg.gnumcueclipse.managedbuild.cross.riscv.option.target.isa.fp.230139916" name="Floating point" superClass="ilg.gnumcueclipse.managedbuild.cross.riscv.option.target.isa.fp" useByScannerDiscovery="false" value="ilg.gnumcueclipse.managedbuild.cross.riscv.option.isa.fp.single" valueType="enumerated"/>
                             							
-                            <option id="ilg.gnumcueclipse.managedbuild.cross.riscv.option.toolchain.id.284229083" superClass="ilg.gnumcueclipse.managedbuild.cross.riscv.option.toolchain.id" value="-2032619395" valueType="string"/>
+                            <option id="ilg.gnumcueclipse.managedbuild.cross.riscv.option.toolchain.id.284229083" superClass="ilg.gnumcueclipse.managedbuild.cross.riscv.option.toolchain.id" useByScannerDiscovery="false" value="-2032619395" valueType="string"/>
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnumcueclipse.managedbuild.cross.riscv.targetPlatform.1608233090" isAbstract="false" osList="all" superClass="ilg.gnumcueclipse.managedbuild.cross.riscv.targetPlatform"/>
                             							
@@ -124,6 +124,8 @@
                                 <option id="ilg.gnumcueclipse.managedbuild.cross.riscv.option.c.compiler.defs.1579876752" name="Defined symbols (-D)" superClass="ilg.gnumcueclipse.managedbuild.cross.riscv.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
                                     									
                                     <listOptionValue builtIn="false" value="MSCC_STDIO_THRU_CORE_UART_APB"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="HARD_FLOAT_DESIGN"/>
                                     								
                                 </option>
                                 								
