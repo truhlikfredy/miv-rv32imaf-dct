@@ -46,17 +46,21 @@ continue
 
 printf "Test was iterated=%d times ", current_iteration
 
-printf "Current build configuration is %08X", current_configuration 
+printf "Current build configuration is %08X", current_configuration
+
+set $expected=0 
 
 if (current_configuration & 4)
     # hard float - will produce slightly different checksum for each iteration
     # the checksum overflows in such way that it's easy to precalculate it
     # in advance 
-    test_expected 0x3440f3d5 * current_iteration
+    set $expected=0x3440f3d5 * current_iteration
 else
     # soft float implementation
-    test_expected 0x6673c18e * current_iteration
+    set $expected=0x6673c18e * current_iteration
 end
+
+test_expected $expected 
 
 print_separator
 printf "test failing because you use UNSUPORTED iterations.\n"
