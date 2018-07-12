@@ -17,6 +17,8 @@
 #define ITERATIONS 10
 #endif
 
+const unsigned int current_configuration = get_configuration_state();
+
 
 // Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
@@ -117,7 +119,6 @@ float test(float (*input)[SIZE], unsigned int* totalChecksum) {
 void display_total_sum(unsigned int sum, unsigned int current_iteration) {
 	// If you are doing automated gdb testing, this is the place where
 	// you want to set your breakpoint to.
-	unsigned int current_configuration = get_configuration_state();
     printf("total_checksum=0x%08x current_iteration=%d \n", sum, current_iteration);
 }
 
