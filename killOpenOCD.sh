@@ -20,6 +20,8 @@ function kill_all_existing {
         sudo kill -9 $PIDS 
     fi
     sleep 2
+    echo "Is $1 still running? PIDs:"
+    pidof $1
 }
 
 echo "Making sure NO OpenOCD/fpServer is running"
