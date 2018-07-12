@@ -44,9 +44,9 @@ continue
 # Arrived at the display_total_sum breakpoint 
 # Check for all valid checkshums depending on the iterations proccessed
 
-printf "Test was iterated=%d times ", current_iteration
+printf "Test was iterated=%d times \n", current_iteration
 
-printf "Current build configuration is %08X", current_configuration
+printf "Current build configuration is %08X \n", current_configuration
 
 set $expected=0 
 
