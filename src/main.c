@@ -19,6 +19,7 @@
 
 unsigned int current_configuration;
 
+
 // Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
   // this could be optimized and storing whole row to separate local variable
@@ -123,30 +124,30 @@ void display_total_sum(unsigned int sum, unsigned int current_iteration) {
 
 
 int main() {
-  unsigned int total_sum = 0;
-  unsigned int iteration = 1;
-  current_configuration = get_configuration_state();
+  unsigned int total_checksum = 0;
+  unsigned int iteration      = 1;
+  current_configuration       = get_configuration_state();
 
   while (1) {
-    float        total     = 0.0f;
-    unsigned int sum = 0;
+    float        totalDifference = 0.0f;
+    unsigned int checksum        = 0;
 
-    total += test(data_wave,            &sum);
-    total += test(data_A,               &sum);
-    total += test(data_checker,         &sum);
-    total += test(data_checker_inverse, &sum);
-    total += test(data_empty,           &sum);
-    total += test(data_full,            &sum);
-    total += test(data_stripe,          &sum);
-    total += test(data_stripe_inverse,  &sum);
-    total += test(data_random,          &sum);
+    totalDifference += test(data_wave,            &checksum);
+    totalDifference += test(data_A,               &checksum);
+    totalDifference += test(data_checker,         &checksum);
+    totalDifference += test(data_checker_inverse, &checksum);
+    totalDifference += test(data_empty,           &checksum);
+    totalDifference += test(data_full,            &checksum);
+    totalDifference += test(data_stripe,          &checksum);
+    totalDifference += test(data_stripe_inverse,  &checksum);
+    totalDifference += test(data_random,          &checksum);
 
-    total_sum += sum;
+    total_checksum += checksum;
 
     if ( (iteration % ITERATIONS) == 0) {
-    	display_total_sum(total_sum, iteration);
+    	display_total_sum(total_checksum, iteration);
     }
-    printf("checksum=0x%08x diff=%f iteration=%d\n", sum, total, iteration);
+    printf("checksum=0x%08x diff=%f iteration=%d\n", checksum, totalDifference, iteration);
     iteration++;
   }
 
