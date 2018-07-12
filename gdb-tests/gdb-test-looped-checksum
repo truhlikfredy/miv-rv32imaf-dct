@@ -46,7 +46,7 @@ continue
 
 printf "Test was iterated=%d times ", current_iteration
 
-printf "Current build configuration is
+printf "Current build configuration is %08X", current_configuration 
 
 if (current_configuration & 4)
     # hard float - will produce slightly different checksum for each iteration
