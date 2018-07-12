@@ -17,8 +17,7 @@
 #define ITERATIONS 10
 #endif
 
-const unsigned int current_configuration = get_configuration_state();
-
+unsigned int current_configuration;
 
 // Discrete cosine transform
 void dct(float (*input)[SIZE], float (*output)[SIZE]) {
@@ -126,6 +125,7 @@ void display_total_sum(unsigned int sum, unsigned int current_iteration) {
 int main() {
   unsigned int total_sum = 0;
   unsigned int iteration = 1;
+  current_configuration = get_configuration_state();
 
   while (1) {
     float        total     = 0.0f;
