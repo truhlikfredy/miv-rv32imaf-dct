@@ -46,7 +46,7 @@ continue
 
 printf "Test was iterated=%d times ", current_iteration
 
-if (current_configuration & 0x4)
+if (current_configuration & 4)
     #hard float
 
     if (current_iteration == 1200)
