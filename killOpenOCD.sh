@@ -11,10 +11,10 @@ function kill_all_existing {
     then
         if [[ "$(command -v sudo)" ]];
         then
-            # use regular kill if sudo is not present
+            echo "Using regular kill (sudo is not present)"
             kill $PIDS
         else
-            # use sudo if it's found on the system
+            echo "Using kill with sudo"
             sudo kill $PIDS
         fi          
     fi
@@ -26,10 +26,10 @@ function kill_all_existing {
         # agressive kill
         if [[ "$(command -v sudo)" ]];
         then
-            # use regular kill if sudo is not present
+            echo "Using agressive regular kill (sudo is not present)"
             kill -9 $PIDS
         else
-            # use sudo if it's found on the system
+            echo "Using agressive kill with sudo"
             sudo kill -9 $PIDS
         fi 
     fi
