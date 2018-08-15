@@ -38,6 +38,13 @@ end
 
 target remote localhost:3333
 load miv-rv32imaf-dct.elf
+
+# Break in case of catastroficall fail (like a traphandler), don't forget 
+# compile with GDB_TESTING define or the Release variantion might not trigger
+# on this point even when it will be reached
+break _exit
+
+
 break display_total_sum
 continue
 
