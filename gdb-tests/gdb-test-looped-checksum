@@ -1,76 +1,46 @@
+# Load required GDB commands library
+source ../gdb-tests/gdb-test-common
 
-define print_separator
-  printf "\n********************************************************************************\n" 
-end
+# Connect to the target, load ELF and setup common breakpoints
+test_setup_default miv-rv32imaf-dct.elf
 
-
-define test_failed
-  # if it is not catched by any pass conditions, then it must be fail
-  print_separator
-  printf "FAILED the test\n"
-  print_separator
-
-  # exiting with a specific exit code newer kernels can have 32bit exit code so it
-  # will not be mistaken by any other exit codes which could happen on communication
-  # or other errors
-  quit 150
-end
-
-
-define test_expected
-  printf "expected=%08X actual=%08X\n", $arg0, sum
-
-  if (sum == $arg0)
-    print_separator
-    print "PASSED the test\n"
-    print_separator
-
-    # exiting with a specific exit code newer kernels can have 32bit exit code so it
-    # will not be mistaken by any other exit codes which could happen on communication
-    # or other errors
-
-    quit 149   
-  else
-    test_failed
-  end
-end
-
-
-target remote localhost:3333
-load miv-rv32imaf-dct.elf
-
-# Break in case of catastroficall fail (like a traphandler), don't forget 
-# compile with GDB_TESTING define or the Release variantion might not trigger
-# on this point even when it will be reached
-break _exit
-
-
-break display_total_sum
+# Start the execution of the application on the target
+printf "Starting the execution of the application, trying to reach main:\n"
 continue
 
-# Arrived at the display_total_sum breakpoint 
-# Check for all valid checkshums depending on the iterations proccessed
 
-printf "Test was iterated=%d times \n", current_iteration
+# Fail if wrong breakpoint was triggered here
+fail_if_not_test_main
 
-printf "Current build configuration is %08X \n", current_configuration
+# Do not call "continue" from within a defined function as for some reason
+# the attached "commands" with the breakpoints will not trigger
+printf "Main reached, continue with the application:\n"  
+continue
 
-set $expected=0 
+#Arrived at another breakpoint 
+fail_if_not_test_validate_breakpoint
+
+# It's the correct breakpoint (no traphandler), continue with the test evulation
+
+
+# Only for verbosity display enviroment information Hard/Soft float, 
+# Debug/Release and how many iteration the test was running
+test_display_enviroment current_iteration
+
+# Compare correct expected checksum with the actual calculated value, consider 
+# that the checksum changes depending how many times the algorithm was iterated
 
 if (current_configuration & 4)
     # hard float - will produce slightly different checksum for each iteration
     # the checksum overflows in such way that it's easy to precalculate it
     # in advance 
-    set $expected=0x3440f3d5 * current_iteration
+    assert_equals 0x3440f3d5*current_iteration sum
 else
     # soft float implementation
-    set $expected=0x6673c18e * current_iteration
+    assert_equals 0x6673c18e*current_iteration sum
 end
 
-test_expected $expected 
 
-print_separator
-printf "test failing because you use UNSUPORTED iterations.\n"
-print_separator
-
-test_failed
+# If the test didn't fail on any previous asserts then this means they passed.
+# So conclude this whole test as PASS. 
+test_passed 
