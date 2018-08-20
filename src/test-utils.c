@@ -11,9 +11,15 @@ unsigned int get_configuration_state() {
 	ret |= CONFIGURATION_RISCV;
 	ret |= CONFIGURATION_OPTIMALIZATION_0;
 
-	#ifdef HARD_FLOAT_DESIGN
-		ret |= CONFIGURATION_HARDFLOAT;
-	#endif
+#ifdef NDEBUG
+  ret |= CONFIGURATION_OPTIMALIZATION_3;
+#else
+  ret |= CONFIGURATION_OPTIMALIZATION_0;
+#endif
+
+#ifdef __riscv_flen
+  ret |= CONFIGURATION_HARDFLOAT;
+#endif
 
 	return ret;
 }
