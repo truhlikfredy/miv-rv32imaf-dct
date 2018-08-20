@@ -116,7 +116,7 @@ float test(float (*input)[SIZE], unsigned int* totalChecksum) {
 }
 
 
-void testValidateBreak(unsigned int sum, unsigned int current_iteration) {
+void __attribute__((optimize("O0"))) testValidateBreak(unsigned int sum, unsigned int current_iteration) {
 	// If you are doing automated gdb testing, this is the place where
 	// you want to set your breakpoint to.
     printf("total_checksum=0x%08x current_iteration=%d \n", sum, current_iteration);
