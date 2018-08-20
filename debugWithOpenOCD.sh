@@ -9,10 +9,15 @@ $PROJECT_DIR/killOpenOCD.sh
 
 $SC_DIR/openocd/bin/openocd -f board/microsemi-riscv.cfg -c "echo openocd-started" &
 sleep 4 # give enough time for hardware to init
-echo "OpenOCD should be launched, start the gdb now:"
 
-echo "Go into first Debug folder I can find (make sure to run clean before this so there are no other folders present)"
-cd $PROJECT_DIR/Debug*
+
+# Start GDB
+echo "OpenOCD should be launched, start the gdb now. Go into the first Debug"
+echo "folder I can find (make sure to run clean before this so there are no"
+echo "other folders present). One of these below should success:"
+cd $TESTS_DIR/../Debug*
+cd $TESTS_DIR/../Release*
+
 $SC_DIR/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-gdb -x ../gdb-tests/gdb-test-looped-checksum *.elf
 
 # Store the exit code
