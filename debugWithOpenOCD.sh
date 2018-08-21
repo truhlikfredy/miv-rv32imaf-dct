@@ -15,8 +15,10 @@ sleep 4 # give enough time for hardware to init
 echo "OpenOCD should be launched, start the gdb now. Go into the first Debug"
 echo "folder I can find (make sure to run clean before this so there are no"
 echo "other folders present). One of these below should success:"
-cd $TESTS_DIR/../Debug*
-cd $TESTS_DIR/../Release*
+ls -la
+cd $PROJECT_DIR/Debug*
+cd $PROJECT_DIR/Release*
+ls -la
 
 $SC_DIR/riscv-unknown-elf-gcc/bin/riscv64-unknown-elf-gdb -x ../gdb-tests/gdb-test-looped-checksum *.elf
 
