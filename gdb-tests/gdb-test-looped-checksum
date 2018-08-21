@@ -35,10 +35,10 @@ if (current_configuration & 4)
     
     if (current_configuration & 8)
         # Debug hard float  variant has different results than
-        assert_equals 0x3440f3d5*current_iteration actualChecksum
+        assert_equals 0x3440f3d5*current_iteration sum
     else
         # Release hard float variant
-        assert_equals 0xe9a76406*current_iteration actualChecksum
+        assert_equals 0xe9a76406*current_iteration sum
     end
     
 else
@@ -46,10 +46,10 @@ else
     
     if (current_configuration & 8)
         # Soft float Debug
-        assert_equals 0x6673c18e*current_iteration actualChecksum
+        assert_equals 0x6673c18e*current_iteration sum
     else
         # Soft float Release
-        assert_equals 0x66db2e7d*current_iteration actualChecksum
+        assert_equals 0x66db2e7d*current_iteration sum
     end
 end
 
