@@ -9,7 +9,6 @@ unsigned int get_configuration_state() {
 	unsigned int ret = 0;
 
 	ret |= CONFIGURATION_RISCV;
-	ret |= CONFIGURATION_OPTIMALIZATION_0;
 
 #ifdef NDEBUG
   ret |= CONFIGURATION_OPTIMALIZATION_3;
